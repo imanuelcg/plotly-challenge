@@ -30,7 +30,7 @@ d3.json("samples.json").then(function(data){
         var bar_data = [bar_trace]
 
         bar_layout = {
-            yaxis: {'type':'category'},
+            
             height: 500,
             width: 800
         };
@@ -63,7 +63,7 @@ d3.json("samples.json").then(function(data){
         
         Object.entries(metadata[0]).forEach(([key,value]) => {
            d3.select("#sample-metadata")
-           .append("p")
+           .append('p')
            .text(`${key} : ${value}`)
         });
     };
@@ -72,14 +72,15 @@ d3.json("samples.json").then(function(data){
     d3.selectAll("#selDataset").on("change",updatePlotly)
 
     function updatePlotly() {
-        var data_set = d3.select("selDataset").property("value");
+        var data_set = d3.select("#selDataset").property("value");
+        console.log(data_set);
 
         // Creating variable to filtered the data
-        var filtered_data = samples.filter(r => r.id === data_set)[0];
+        var filtered_data = samples.filter(r => r.id == data_set)[0];
         
         // Re-styling bar chart
         var barValues = filtered_data.sample_values.slice(0,10).reverse();
-        var barLabels = filtered_data.otu_ids.slice(0,10).reverse();
+        var barLabels = filtered_data.otu_ids.slice(0,10).reverse().map(t => `OTU ${t}`);
 
         Plotly.restyle("bar","x",[barValues]);
         Plotly.restyle("bar","y",[barLabels]);
@@ -98,12 +99,17 @@ d3.json("samples.json").then(function(data){
         Plotly.restyle("bubble-plot","marker",[updateBubbles]);
         Plotly.restyle("bubble-plot","text",[textBubbles]);
 
+
         // Changing metadata information
-        Object.entries(metadata.filter(i => i.id === data_set)).forEach(([key,value]) => {
+        d3.select("#sample-metadata")
+            .html('');
+
+        Object.entries(metadata.filter(i => i.id == data_set)[0]).forEach(([key, value]) => {
             d3.select("#sample-metadata")
-            .append("p")
+            .append('p')
             .text(`${key} : ${value}`)
          });
+
     };
 
     init();
